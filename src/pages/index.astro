@@ -1,7 +1,7 @@
 ---
 import Page from '../layouts/Page.astro';
 import { getCollection } from 'astro:content';
-import { postSlug } from '../utils';
+import { postPath, sitePath } from '../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -53,14 +53,14 @@ const projects = await getCollection('projects');
       <section>
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-heading">最新文章</h2>
-          <a href="/posts" class="text-sm text-ink-light dark:text-dark-text-secondary no-underline hover:text-cyan-dark">
+          <a href={sitePath('/posts')} class="text-sm text-ink-light dark:text-dark-text-secondary no-underline hover:text-cyan-dark">
             全部 &rarr;
           </a>
         </div>
         {posts.length > 0 ? (
           <div class="space-y-3">
             {posts.map((post) => (
-              <a href={`/posts/${postSlug(post.id)}`} class="card block no-underline group">
+              <a href={postPath(post.id)} class="card block no-underline group">
                 <h3 class="font-heading text-ink dark:text-dark-text group-hover:text-cyan-dark dark:group-hover:text-cyan-light transition-colors">
                   {post.data.title}
                 </h3>
@@ -90,7 +90,7 @@ const projects = await getCollection('projects');
         <section>
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-heading">项目</h2>
-            <a href="/projects" class="text-sm text-ink-light dark:text-dark-text-secondary no-underline hover:text-cyan-dark">
+            <a href={sitePath('/projects')} class="text-sm text-ink-light dark:text-dark-text-secondary no-underline hover:text-cyan-dark">
               全部 &rarr;
             </a>
           </div>

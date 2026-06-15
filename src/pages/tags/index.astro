@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
+import { tagPath } from '../../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -19,7 +20,7 @@ const tags = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
   <h1 class="text-xl font-heading mb-6">标签</h1>
   <div class="flex flex-wrap gap-3">
     {tags.map(([tag, count]) => (
-      <a href={`/tags/${tag}`} class="tag no-underline">
+      <a href={tagPath(tag)} class="tag no-underline">
         {tag} <span class="text-ink-light/60 dark:text-dark-text-secondary/60 ml-1">{count}</span>
       </a>
     ))}

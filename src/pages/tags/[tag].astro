@@ -1,10 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
-import { postSlug } from '../../utils';
+import { postPath } from '../../utils';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
   const tags = new Set<string>();
   posts.forEach((post) => post.data.tags.forEach((tag) => tags.add(tag)));
   return [...tags].map((tag) => ({ params: { tag } }));
@@ -19,7 +19,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft && data.ta
   <h1 class="text-xl font-heading mb-6">标签：{tag}</h1>
   <div class="space-y-3">
     {posts.map((post) => (
-      <a href={`/posts/${postSlug(post.id)}`} class="card block no-underline group">
+      <a href={postPath(post.id)} class="card block no-underline group">
         <h2 class="font-heading text-ink dark:text-dark-text group-hover:text-cyan-dark dark:group-hover:text-cyan-light transition-colors">
           {post.data.title}
         </h2>

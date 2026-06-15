@@ -1,7 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { getCollection } from 'astro:content';
-import { postSlug } from '../../utils';
+import { postPath } from '../../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -11,7 +11,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   <h1 class="text-xl font-heading mb-6">文章</h1>
   <div class="space-y-3">
     {posts.map((post) => (
-      <a href={`/posts/${postSlug(post.id)}`} class="card block no-underline group">
+      <a href={postPath(post.id)} class="card block no-underline group">
         <h2 class="font-heading text-ink dark:text-dark-text group-hover:text-cyan-dark dark:group-hover:text-cyan-light transition-colors">
           {post.data.title}
         </h2>

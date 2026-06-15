@@ -1,28 +1,33 @@
 ---
+import { sitePath } from '../utils';
+
 const navItems = [
-  { href: '/', label: '首页' },
-  { href: '/posts', label: '文章' },
-  { href: '/archive', label: '归档' },
-  { href: '/tags', label: '标签' },
-  { href: '/projects', label: '项目' },
-  { href: '/about', label: '关于' },
+  { path: '/', label: '首页' },
+  { path: '/posts', label: '文章' },
+  { path: '/archive', label: '归档' },
+  { path: '/tags', label: '标签' },
+  { path: '/projects', label: '项目' },
+  { path: '/about', label: '关于' },
 ];
 
-const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentPath = Astro.url.pathname.startsWith(base)
+  ? Astro.url.pathname.slice(base.length) || '/'
+  : Astro.url.pathname;
 ---
 
 <header class="border-b border-smoke dark:border-dark-border">
   <nav class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-    <a href="/" class="font-heading text-lg text-ink dark:text-dark-text no-underline">
+    <a href={sitePath('/')} class="font-heading text-lg text-ink dark:text-dark-text no-underline">
       许兴龙
     </a>
     <div class="flex items-center gap-6">
       {navItems.map((item) => (
         <a
-          href={item.href}
+          href={sitePath(item.path)}
           class:list={[
             'text-sm no-underline transition-colors',
-            currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+            currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path))
               ? 'text-cyan-dark dark:text-cyan-light'
               : 'text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light',
           ]}

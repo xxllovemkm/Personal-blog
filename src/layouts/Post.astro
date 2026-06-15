@@ -2,6 +2,7 @@
 import Base from './Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { tagPath } from '../utils';
 import '../styles/global.css';
 
 export interface Props {
@@ -35,7 +36,7 @@ const date = new Date(frontmatter.date);
         {frontmatter.tags && frontmatter.tags.length > 0 && (
           <div class="flex flex-wrap gap-2 mt-3">
             {frontmatter.tags.map((tag) => (
-              <a href={`/tags/${tag}`} class="tag no-underline">{tag}</a>
+              <a href={tagPath(tag)} class="tag no-underline">{tag}</a>
             ))}
           </div>
         )}
