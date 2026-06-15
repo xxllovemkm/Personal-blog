@@ -2,6 +2,7 @@
 title: "Sit"
 date: "2026-06-15"
 tags: ["AI Agent", "Git", "Skill", "Tooling"]
+repo: "https://github.com/OpenRaiser/Sit"
 summary: "面向 AI Agent Skill 的 Git 原生语义安全层，为 prompt、schema、golden test 与脚本变更提供结构化风险信号。"
 ---
 

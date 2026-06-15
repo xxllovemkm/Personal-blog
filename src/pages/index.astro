@@ -12,6 +12,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
 
 const projects = await getCollection('projects');
 const publications = await getPublications();
+const projectUrl = (project: typeof projects[number]) => project.data.demo || project.data.repo;
 ---
 
 <Page title="许兴龙 - 个人博客">
@@ -135,19 +136,17 @@ const publications = await getPublications();
           <div class="grid gap-3">
             {projects.map((project) => (
               <div class="card">
-                <h3 class="font-heading">{project.data.title}</h3>
+                <h3 class="font-heading">
+                  {projectUrl(project) ? (
+                    <a href={projectUrl(project)} class="text-ink dark:text-dark-text no-underline hover:text-cyan-dark dark:hover:text-cyan-light">
+                      {project.data.title}
+                    </a>
+                  ) : (
+                    project.data.title
+                  )}
+                </h3>
                 {project.data.summary && (
                   <p class="mt-1 text-sm text-ink-light dark:text-dark-text-secondary">{project.data.summary}</p>
-                )}
-                {(project.data.repo || project.data.demo) && (
-                  <div class="flex gap-3 mt-2">
-                    {project.data.repo && (
-                      <a href={project.data.repo} class="text-sm no-underline">GitHub</a>
-                    )}
-                    {project.data.demo && (
-                      <a href={project.data.demo} class="text-sm no-underline">Demo</a>
-                    )}
-                  </div>
                 )}
               </div>
             ))}

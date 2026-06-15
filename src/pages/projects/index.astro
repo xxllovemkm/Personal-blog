@@ -4,6 +4,8 @@ import { getCollection } from 'astro:content';
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const projectUrl = (project: typeof projects[number]) => project.data.demo || project.data.repo;
 ---
 
 <Page title="项目 - 许兴龙">
@@ -11,7 +13,15 @@ const projects = (await getCollection('projects'))
   <div class="grid gap-4">
     {projects.map((project) => (
       <div class="card">
-        <h2 class="font-heading text-lg">{project.data.title}</h2>
+        <h2 class="font-heading text-lg">
+          {projectUrl(project) ? (
+            <a href={projectUrl(project)} class="text-ink dark:text-dark-text no-underline hover:text-cyan-dark dark:hover:text-cyan-light">
+              {project.data.title}
+            </a>
+          ) : (
+            project.data.title
+          )}
+        </h2>
         {project.data.summary && (
           <p class="mt-2 text-sm text-ink-light dark:text-dark-text-secondary">{project.data.summary}</p>
         )}
@@ -20,16 +30,6 @@ const projects = (await getCollection('projects'))
             <span class="tag">{tag}</span>
           ))}
         </div>
-        {(project.data.repo || project.data.demo) && (
-          <div class="flex gap-4 mt-3">
-            {project.data.repo && (
-              <a href={project.data.repo} class="text-sm no-underline">GitHub &rarr;</a>
-            )}
-            {project.data.demo && (
-              <a href={project.data.demo} class="text-sm no-underline">Demo &rarr;</a>
-            )}
-          </div>
-        )}
       </div>
     ))}
   </div>
