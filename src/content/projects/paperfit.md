@@ -2,6 +2,7 @@
 title: "PaperFit"
 date: "2026-06-15"
 tags: ["LaTeX", "Agent", "Layout"]
+repo: "https://github.com/OpenRaiser/PaperFit"
 summary: "面向科学文档的 vision-in-the-loop 视觉排版优化系统，将能编译的 LaTeX 论文转化为可出版的版面。"
 ---
 

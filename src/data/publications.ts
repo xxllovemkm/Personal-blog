@@ -19,6 +19,11 @@ const fallbackPublications: Publication[] = [
     source: 'arxiv',
   },
   {
+    title: 'The Trinity of Consistency as a Defining Principle for General World Models',
+    url: 'https://arxiv.org/abs/2602.23152',
+    source: 'arxiv',
+  },
+  {
     title: 'GGBench: A Geometric Generative Reasoning Benchmark for Unified Multimodal Models',
     url: 'https://arxiv.org/abs/2511.11134',
     source: 'arxiv',

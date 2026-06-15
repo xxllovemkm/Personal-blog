@@ -30,7 +30,7 @@ const publications = await getPublications();
         </div>
         <h1 class="text-lg font-heading mb-1">许兴龙</h1>
         <p class="text-sm text-ink-light dark:text-dark-text-secondary mb-4">
-          中国科学院大学计算机技术硕士，关注 AI Agent、数据工程、多模态推理与科学文档智能。
+          中国科学院大学计算机技术硕士，研究方向为 GUI agent 和多模态推理。
         </p>
         <div class="flex justify-center gap-3 text-ink-light dark:text-dark-text-secondary">
           <a href="https://github.com/xxllovemkm" aria-label="GitHub" class="hover:text-cyan-dark dark:hover:text-cyan-light">
@@ -47,7 +47,7 @@ const publications = await getPublications();
 
       <!-- 站点统计 -->
       <div class="card mt-4">
-        <div class="grid grid-cols-2 gap-3 text-center text-sm">
+        <div class="grid grid-cols-3 gap-3 text-center text-sm">
           <div>
             <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{posts.length}</div>
             <div class="text-ink-light dark:text-dark-text-secondary">文章</div>
@@ -55,6 +55,10 @@ const publications = await getPublications();
           <div>
             <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{projects.length}</div>
             <div class="text-ink-light dark:text-dark-text-secondary">项目</div>
+          </div>
+          <div>
+            <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{publications.length}</div>
+            <div class="text-ink-light dark:text-dark-text-secondary">论文</div>
           </div>
         </div>
       </div>
