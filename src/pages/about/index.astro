@@ -2,7 +2,9 @@
 import Page from '../../layouts/Page.astro';
 import { Image } from 'astro:assets';
 import avatar from '../../assets/images/avatar.webp';
-import { openReviewProfile, publications } from '../../data/publications';
+import { getPublications, openReviewProfile } from '../../data/publications';
+
+const publications = await getPublications();
 ---
 
 <Page title="关于 - 许兴龙">
@@ -53,29 +55,15 @@ import { openReviewProfile, publications } from '../../data/publications';
 
       <section class="space-y-3">
         <h2 class="text-lg font-heading">代表工作</h2>
-        <div class="space-y-4 text-sm">
+        <div class="space-y-3 text-sm">
           {publications.map((paper) => (
             <article>
-              <div class="flex flex-wrap items-center gap-2 mb-1 text-xs text-ink-light dark:text-dark-text-secondary">
-                <span class="tag text-xs">{paper.venue} {paper.year}</span>
-                <span>{paper.role}</span>
-                <span>{paper.status}</span>
-              </div>
-              <h3 class="font-heading">{paper.title}</h3>
-              <p class="mt-1 text-ink-light dark:text-dark-text-secondary">
-                {paper.summary}
-              </p>
-              <div class="flex flex-wrap gap-3 mt-2">
-                {paper.links.openreview && (
-                  <a href={paper.links.openreview} class="text-xs no-underline">OpenReview</a>
-                )}
-                {paper.links.arxiv && (
-                  <a href={paper.links.arxiv} class="text-xs no-underline">arXiv</a>
-                )}
-                {paper.links.project && (
-                  <a href={paper.links.project} class="text-xs no-underline">Project</a>
-                )}
-              </div>
+              <a
+                href={paper.url}
+                class="font-heading text-ink dark:text-dark-text no-underline hover:text-cyan-dark dark:hover:text-cyan-light"
+              >
+                {paper.title}
+              </a>
             </article>
           ))}
         </div>

@@ -3,7 +3,7 @@ import Page from '../layouts/Page.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import avatar from '../assets/images/avatar.webp';
-import { openReviewProfile, publications } from '../data/publications';
+import { getPublications, openReviewProfile } from '../data/publications';
 import { postPath, sitePath } from '../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
@@ -11,6 +11,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .slice(0, 5);
 
 const projects = await getCollection('projects');
+const publications = await getPublications();
 ---
 
 <Page title="许兴龙 - 个人博客">
@@ -65,30 +66,15 @@ const projects = await getCollection('projects');
             OpenReview
           </a>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-3">
           {publications.map((paper) => (
             <article>
-              <div class="flex items-center gap-2 mb-1 text-xs text-ink-light dark:text-dark-text-secondary">
-                <span class="tag text-xs">{paper.venue} {paper.year}</span>
-                <span>{paper.role}</span>
-              </div>
-              <h3 class="font-heading text-sm leading-relaxed text-ink dark:text-dark-text">
+              <a
+                href={paper.url}
+                class="font-heading text-sm leading-relaxed text-ink dark:text-dark-text no-underline hover:text-cyan-dark dark:hover:text-cyan-light"
+              >
                 {paper.title}
-              </h3>
-              <p class="mt-1 text-xs leading-relaxed text-ink-light dark:text-dark-text-secondary">
-                {paper.summary}
-              </p>
-              <div class="flex flex-wrap gap-3 mt-2 text-xs">
-                {paper.links.openreview && (
-                  <a href={paper.links.openreview} class="no-underline">OpenReview</a>
-                )}
-                {paper.links.arxiv && (
-                  <a href={paper.links.arxiv} class="no-underline">arXiv</a>
-                )}
-                {paper.links.project && (
-                  <a href={paper.links.project} class="no-underline">Project</a>
-                )}
-              </div>
+              </a>
             </article>
           ))}
         </div>

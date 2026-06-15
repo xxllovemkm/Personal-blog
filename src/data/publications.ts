@@ -1,59 +1,86 @@
 export interface Publication {
   title: string;
-  venue: string;
-  year: string;
-  role: string;
-  status: string;
-  authors: string;
-  summary: string;
-  links: {
-    arxiv?: string;
-    project?: string;
-    openreview?: string;
-  };
+  url: string;
+  source: 'openreview' | 'arxiv' | 'local';
 }
 
 export const openReviewProfile = 'https://openreview.net/profile?id=~Xinglong_Xu2';
+const openReviewProfileId = '~Xinglong_Xu2';
 
-export const publications: Publication[] = [
+const fallbackPublications: Publication[] = [
   {
     title: 'GGBench: A Geometric Generative Reasoning Benchmark for Unified Multimodal Models',
-    venue: 'CVPR',
-    year: '2026',
-    role: '共同一作',
-    status: 'Published',
-    authors: 'Jingxuan Wei, Caijun Jia, Xi Bai, Xinglong Xu, Siyuan Li, Linzhuang Sun, Bihui Yu, Conghui He, Lijun Wu, Cheng Tan',
-    summary:
-      '提出几何生成式推理基准，用可执行 GeoGebra 代码作为机器可验证真值，评测多模态模型的语言推理与精确视觉构造能力。',
-    links: {
-      arxiv: 'https://arxiv.org/abs/2511.11134',
-      project: 'https://opendatalab-raiser.github.io/GGBench/',
-    },
+    url: 'https://arxiv.org/abs/2511.11134',
+    source: 'arxiv',
   },
   {
     title: 'Programming with Data: Test-Driven Data Engineering for Self-Improving LLMs from Raw Corpora',
-    venue: 'arXiv',
-    year: '2026',
-    role: '共同一作',
-    status: 'Preprint',
-    authors: 'Chenkai Pan, Xinglong Xu, Yuhang Xu, Yujun Wu, Siyuan Li, Jintao Chen, Conghui He, Jingxuan Wei, Cheng Tan',
-    summary:
-      '提出 Programming with Data / ProDa 范式，将大模型数据工程映射到测试驱动开发流程，使模型错误可诊断、可回溯、可定向修复。',
-    links: {
-      arxiv: 'https://arxiv.org/abs/2604.24819',
-    },
+    url: 'https://arxiv.org/abs/2604.24819',
+    source: 'arxiv',
   },
   {
     title: 'PaperFit: Vision-in-the-Loop Typesetting Optimization for Scientific Documents',
-    venue: 'arXiv',
-    year: '2026',
-    role: '学生一作',
-    status: 'Preprint',
-    authors: 'Bihui Yu, Xinglong Xu, Junjie Jiang, Jiabei Cheng, Caijun Jia, Siyuan Li, Conghui He, Jingxuan Wei, Cheng Tan',
-    summary:
-      '形式化 Visual Typesetting Optimization 任务，提出 vision-in-the-loop Agent，将可编译 LaTeX 论文迭代优化为可出版版面。',
-    links: {
-      arxiv: 'https://arxiv.org/abs/2605.10341',
-    },
+    url: 'https://arxiv.org/abs/2605.10341',
+    source: 'arxiv',
   },
 ];
+
+let publicationCache: Publication[] | undefined;
+
+function valueOfOpenReviewField(field: unknown): string | undefined {
+  if (typeof field === 'string') return field;
+  if (field && typeof field === 'object' && 'value' in field) {
+    const value = (field as { value?: unknown }).value;
+    return typeof value === 'string' ? value : undefined;
+  }
+  return undefined;
+}
+
+function normalizeOpenReviewNote(note: any): Publication | undefined {
+  const title = valueOfOpenReviewField(note?.content?.title);
+  if (!title) return undefined;
+
+  return {
+    title,
+    url: `https://openreview.net/forum?id=${note.forum || note.id}`,
+    source: 'openreview',
+  };
+}
+
+async function fetchOpenReviewPublications(): Promise<Publication[]> {
+  const encodedProfileId = encodeURIComponent(openReviewProfileId);
+  const endpoints = [
+    `https://api2.openreview.net/notes?content.authorids=${encodedProfileId}&limit=100`,
+    `https://api2.openreview.net/notes?content.authors.username=${encodedProfileId}&limit=100`,
+  ];
+
+  const publications = new Map<string, Publication>();
+
+  for (const endpoint of endpoints) {
+    const response = await fetch(endpoint);
+    if (!response.ok) continue;
+
+    const data = await response.json();
+    for (const note of data.notes || []) {
+      const publication = normalizeOpenReviewNote(note);
+      if (publication) publications.set(publication.title, publication);
+    }
+  }
+
+  return [...publications.values()];
+}
+
+export async function getPublications(): Promise<Publication[]> {
+  if (publicationCache) return publicationCache;
+
+  try {
+    const openReviewPublications = await fetchOpenReviewPublications();
+    publicationCache = openReviewPublications.length > 0
+      ? openReviewPublications
+      : fallbackPublications;
+  } catch {
+    publicationCache = fallbackPublications;
+  }
+
+  return publicationCache;
+}
