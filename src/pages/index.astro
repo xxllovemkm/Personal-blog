@@ -3,6 +3,7 @@ import Page from '../layouts/Page.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import avatar from '../assets/images/avatar.webp';
+import { openReviewProfile, publications } from '../data/publications';
 import { postPath, sitePath } from '../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
@@ -21,8 +22,8 @@ const projects = await getCollection('projects');
           <Image
             src={avatar}
             alt="许兴龙"
-            width={96}
-            height={96}
+            width={192}
+            height={192}
             class="w-full h-full object-cover"
           />
         </div>
@@ -36,6 +37,9 @@ const projects = await getCollection('projects');
           </a>
           <a href="mailto:xuxinglong00423@163.com" aria-label="邮箱" class="hover:text-cyan-dark dark:hover:text-cyan-light">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </a>
+          <a href={openReviewProfile} aria-label="OpenReview" class="text-sm font-mono no-underline hover:text-cyan-dark dark:hover:text-cyan-light">
+            OR
           </a>
         </div>
       </div>
@@ -51,6 +55,42 @@ const projects = await getCollection('projects');
             <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{projects.length}</div>
             <div class="text-ink-light dark:text-dark-text-secondary">项目</div>
           </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-heading">发表论文</h2>
+          <a href={openReviewProfile} class="text-xs no-underline text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light">
+            OpenReview
+          </a>
+        </div>
+        <div class="space-y-4">
+          {publications.map((paper) => (
+            <article>
+              <div class="flex items-center gap-2 mb-1 text-xs text-ink-light dark:text-dark-text-secondary">
+                <span class="tag text-xs">{paper.venue} {paper.year}</span>
+                <span>{paper.role}</span>
+              </div>
+              <h3 class="font-heading text-sm leading-relaxed text-ink dark:text-dark-text">
+                {paper.title}
+              </h3>
+              <p class="mt-1 text-xs leading-relaxed text-ink-light dark:text-dark-text-secondary">
+                {paper.summary}
+              </p>
+              <div class="flex flex-wrap gap-3 mt-2 text-xs">
+                {paper.links.openreview && (
+                  <a href={paper.links.openreview} class="no-underline">OpenReview</a>
+                )}
+                {paper.links.arxiv && (
+                  <a href={paper.links.arxiv} class="no-underline">arXiv</a>
+                )}
+                {paper.links.project && (
+                  <a href={paper.links.project} class="no-underline">Project</a>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </aside>

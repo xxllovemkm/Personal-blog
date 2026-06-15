@@ -2,6 +2,7 @@
 import Page from '../../layouts/Page.astro';
 import { Image } from 'astro:assets';
 import avatar from '../../assets/images/avatar.webp';
+import { openReviewProfile, publications } from '../../data/publications';
 ---
 
 <Page title="关于 - 许兴龙">
@@ -11,8 +12,8 @@ import avatar from '../../assets/images/avatar.webp';
         <Image
           src={avatar}
           alt="许兴龙"
-          width={112}
-          height={112}
+          width={224}
+          height={224}
           class="w-full h-full object-cover"
         />
       </div>
@@ -53,24 +54,30 @@ import avatar from '../../assets/images/avatar.webp';
       <section class="space-y-3">
         <h2 class="text-lg font-heading">代表工作</h2>
         <div class="space-y-4 text-sm">
-          <div>
-            <h3 class="font-heading">GGBench</h3>
-            <p class="text-ink-light dark:text-dark-text-secondary">
-              几何生成式推理基准，使用可执行 GeoGebra 代码作为机器可验证真值，评测多模态模型的语言推理与精确视觉构造能力。共同一作，发表于 CVPR 2026。
-            </p>
-          </div>
-          <div>
-            <h3 class="font-heading">Programming with Data / ProDa</h3>
-            <p class="text-ink-light dark:text-dark-text-secondary">
-              将大模型数据工程类比为软件工程中的 TDD，构建从知识抽取、数据生成、模型训练到错误归因和二轮补数据的闭环范式。共同一作，Nature Machine Intelligence under review。
-            </p>
-          </div>
-          <div>
-            <h3 class="font-heading">PaperFit</h3>
-            <p class="text-ink-light dark:text-dark-text-secondary">
-              面向科学文档的 vision-in-the-loop 视觉排版优化系统，将“能编译”的 LaTeX 论文转化为“可出版”的版面。学生一作，投稿至 NeurIPS 2026。
-            </p>
-          </div>
+          {publications.map((paper) => (
+            <article>
+              <div class="flex flex-wrap items-center gap-2 mb-1 text-xs text-ink-light dark:text-dark-text-secondary">
+                <span class="tag text-xs">{paper.venue} {paper.year}</span>
+                <span>{paper.role}</span>
+                <span>{paper.status}</span>
+              </div>
+              <h3 class="font-heading">{paper.title}</h3>
+              <p class="mt-1 text-ink-light dark:text-dark-text-secondary">
+                {paper.summary}
+              </p>
+              <div class="flex flex-wrap gap-3 mt-2">
+                {paper.links.openreview && (
+                  <a href={paper.links.openreview} class="text-xs no-underline">OpenReview</a>
+                )}
+                {paper.links.arxiv && (
+                  <a href={paper.links.arxiv} class="text-xs no-underline">arXiv</a>
+                )}
+                {paper.links.project && (
+                  <a href={paper.links.project} class="text-xs no-underline">Project</a>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -78,6 +85,7 @@ import avatar from '../../assets/images/avatar.webp';
         <h2 class="text-lg font-heading">联系方式</h2>
         <ul class="space-y-1 text-sm">
           <li>GitHub：<a href="https://github.com/xxllovemkm">@xxllovemkm</a></li>
+          <li>OpenReview：<a href={openReviewProfile}>Xinglong Xu</a></li>
           <li>邮箱：<a href="mailto:xuxinglong00423@163.com">xuxinglong00423@163.com</a></li>
         </ul>
       </section>
