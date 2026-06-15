@@ -9,6 +9,16 @@ const openReviewProfileId = '~Xinglong_Xu2';
 
 const fallbackPublications: Publication[] = [
   {
+    title: 'Bridging Modal Isolation in Interleaved Thinking: Supervising Modality Transitions via Stepwise Reinforcement',
+    url: 'https://arxiv.org/abs/2606.12886',
+    source: 'arxiv',
+  },
+  {
+    title: 'PaperFlow: Profiling, Recommending, and Adapting Across Daily Paper Streams',
+    url: 'https://arxiv.org/abs/2606.07454',
+    source: 'arxiv',
+  },
+  {
     title: 'GGBench: A Geometric Generative Reasoning Benchmark for Unified Multimodal Models',
     url: 'https://arxiv.org/abs/2511.11134',
     source: 'arxiv',
@@ -21,6 +31,11 @@ const fallbackPublications: Publication[] = [
   {
     title: 'PaperFit: Vision-in-the-Loop Typesetting Optimization for Scientific Documents',
     url: 'https://arxiv.org/abs/2605.10341',
+    source: 'arxiv',
+  },
+  {
+    title: 'PAGER: Bridging the Semantic-Execution Gap in Point-Precise Geometric GUI Control',
+    url: 'https://arxiv.org/abs/2605.15963',
     source: 'arxiv',
   },
 ];
