@@ -13,7 +13,7 @@ export interface Publication {
   };
 }
 
-export const openReviewProfile = 'https://openreview.net/profile?id=~Xuxinglong1';
+export const openReviewProfile = 'https://openreview.net/profile?id=~Xinglong_Xu2';
 
 export const publications: Publication[] = [
   {
