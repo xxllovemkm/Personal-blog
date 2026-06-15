@@ -1,19 +1,86 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { Image } from 'astro:assets';
+import avatar from '../../assets/images/avatar.webp';
 ---
 
 <Page title="关于 - 许兴龙">
-  <h1 class="text-xl font-heading mb-6">关于</h1>
-  <div class="max-w-prose space-y-4 text-ink dark:text-dark-text">
-    <p>你好，我是许兴龙。</p>
-    <p><!-- 在这里写自我介绍 --></p>
+  <div class="grid md:grid-cols-[180px_1fr] gap-8 items-start">
+    <aside class="card text-center">
+      <div class="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border border-smoke dark:border-dark-border bg-smoke dark:bg-dark-border">
+        <Image
+          src={avatar}
+          alt="许兴龙"
+          width={112}
+          height={112}
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <h1 class="text-xl font-heading mb-2">许兴龙</h1>
+      <p class="text-sm text-ink-light dark:text-dark-text-secondary">
+        AI Agent / 数据工程 / 科学文档智能
+      </p>
+    </aside>
 
-    <div class="divider"></div>
+    <div class="max-w-prose space-y-8 text-ink dark:text-dark-text">
+      <section class="space-y-4">
+        <h2 class="text-lg font-heading">关于我</h2>
+        <p>
+          我是许兴龙，中国科学院大学计算机技术硕士，研究和工程兴趣集中在 AI Agent、面向大模型的数据工程、多模态推理以及科学文档智能。
+        </p>
+        <p>
+          近期工作包括几何生成式推理评测、可测试可诊断的数据工程范式，以及面向 LaTeX 论文的 vision-in-the-loop 视觉排版优化系统。
+        </p>
+      </section>
 
-    <h2 class="text-lg font-heading">联系方式</h2>
-    <ul class="space-y-1 text-sm">
-      <li>GitHub：<a href="https://github.com/">@your-name</a></li>
-      <li>邮箱：<a href="mailto:">your@email.com</a></li>
-    </ul>
+      <section class="space-y-3">
+        <h2 class="text-lg font-heading">教育背景</h2>
+        <div class="space-y-2 text-sm">
+          <p>2019 - 2023：山东科技大学，计算机科学与技术，本科</p>
+          <p>2023 - 2025：中国科学院大学，计算机技术，硕士研究生</p>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-heading">科研方向</h2>
+        <ul class="list-disc pl-5 space-y-2 text-sm">
+          <li>多模态模型的几何生成式推理与可验证评测。</li>
+          <li>面向大模型的 test-driven data engineering 与诊断驱动数据补强。</li>
+          <li>科学文档的视觉排版优化、LaTeX 编译反馈与多 Agent 闭环系统。</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-heading">代表工作</h2>
+        <div class="space-y-4 text-sm">
+          <div>
+            <h3 class="font-heading">GGBench</h3>
+            <p class="text-ink-light dark:text-dark-text-secondary">
+              几何生成式推理基准，使用可执行 GeoGebra 代码作为机器可验证真值，评测多模态模型的语言推理与精确视觉构造能力。共同一作，发表于 CVPR 2026。
+            </p>
+          </div>
+          <div>
+            <h3 class="font-heading">Programming with Data / ProDa</h3>
+            <p class="text-ink-light dark:text-dark-text-secondary">
+              将大模型数据工程类比为软件工程中的 TDD，构建从知识抽取、数据生成、模型训练到错误归因和二轮补数据的闭环范式。共同一作，Nature Machine Intelligence under review。
+            </p>
+          </div>
+          <div>
+            <h3 class="font-heading">PaperFit</h3>
+            <p class="text-ink-light dark:text-dark-text-secondary">
+              面向科学文档的 vision-in-the-loop 视觉排版优化系统，将“能编译”的 LaTeX 论文转化为“可出版”的版面。学生一作，投稿至 NeurIPS 2026。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-heading">联系方式</h2>
+        <ul class="space-y-1 text-sm">
+          <li>GitHub：<a href="https://github.com/xxllovemkm">@xxllovemkm</a></li>
+          <li>邮箱：<a href="mailto:xuxinglong00423@163.com">xuxinglong00423@163.com</a></li>
+        </ul>
+      </section>
+    </div>
   </div>
 </Page>

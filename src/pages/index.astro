@@ -1,6 +1,8 @@
 ---
 import Page from '../layouts/Page.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import avatar from '../assets/images/avatar.webp';
 import { postPath, sitePath } from '../utils';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
@@ -15,18 +17,24 @@ const projects = await getCollection('projects');
     <!-- 个人信息 -->
     <aside class="md:col-span-1">
       <div class="card text-center">
-        <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-smoke dark:bg-dark-border flex items-center justify-center">
-          <span class="text-2xl font-heading">许</span>
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border border-smoke dark:border-dark-border bg-smoke dark:bg-dark-border">
+          <Image
+            src={avatar}
+            alt="许兴龙"
+            width={96}
+            height={96}
+            class="w-full h-full object-cover"
+          />
         </div>
         <h1 class="text-lg font-heading mb-1">许兴龙</h1>
         <p class="text-sm text-ink-light dark:text-dark-text-secondary mb-4">
-          <!-- 一句话简介 -->
+          中国科学院大学计算机技术硕士，关注 AI Agent、数据工程、多模态推理与科学文档智能。
         </p>
         <div class="flex justify-center gap-3 text-ink-light dark:text-dark-text-secondary">
-          <a href="https://github.com/" aria-label="GitHub" class="hover:text-cyan-dark dark:hover:text-cyan-light">
+          <a href="https://github.com/xxllovemkm" aria-label="GitHub" class="hover:text-cyan-dark dark:hover:text-cyan-light">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.37.5 0 5.78 0 12.292c0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.333-1.723-1.333-1.723-1.089-.731.083-.716.083-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.802 2.807 1.281 3.492.98.108-.762.418-1.281.762-1.576-2.665-.297-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.228-3.164-.122-.298-.532-1.497.117-3.12 0 0 1.001-.314 3.28 1.209A11.5 11.5 0 0112 6.844c1.02.005 2.047.135 3.004.397 2.277-1.523 3.275-1.209 3.275-1.209.651 1.623.241 2.822.118 3.12.765.825 1.226 1.877 1.226 3.164 0 4.53-2.805 5.527-5.475 5.818.43.365.814 1.084.814 2.184 0 1.576-.014 2.846-.014 3.232 0 .316.216.683.825.567C20.565 21.917 24 17.5 24 12.292 24 5.78 18.627.5 12 .5z"/></svg>
           </a>
-          <a href="mailto:" aria-label="邮箱" class="hover:text-cyan-dark dark:hover:text-cyan-light">
+          <a href="mailto:xuxinglong00423@163.com" aria-label="邮箱" class="hover:text-cyan-dark dark:hover:text-cyan-light">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           </a>
         </div>
@@ -101,14 +109,16 @@ const projects = await getCollection('projects');
                 {project.data.summary && (
                   <p class="mt-1 text-sm text-ink-light dark:text-dark-text-secondary">{project.data.summary}</p>
                 )}
-                <div class="flex gap-3 mt-2">
-                  {project.data.repo && (
-                    <a href={project.data.repo} class="text-sm no-underline">GitHub</a>
-                  )}
-                  {project.data.demo && (
-                    <a href={project.data.demo} class="text-sm no-underline">Demo</a>
-                  )}
-                </div>
+                {(project.data.repo || project.data.demo) && (
+                  <div class="flex gap-3 mt-2">
+                    {project.data.repo && (
+                      <a href={project.data.repo} class="text-sm no-underline">GitHub</a>
+                    )}
+                    {project.data.demo && (
+                      <a href={project.data.demo} class="text-sm no-underline">Demo</a>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

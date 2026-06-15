@@ -20,14 +20,16 @@ const projects = (await getCollection('projects'))
             <span class="tag">{tag}</span>
           ))}
         </div>
-        <div class="flex gap-4 mt-3">
-          {project.data.repo && (
-            <a href={project.data.repo} class="text-sm no-underline">GitHub &rarr;</a>
-          )}
-          {project.data.demo && (
-            <a href={project.data.demo} class="text-sm no-underline">Demo &rarr;</a>
-          )}
-        </div>
+        {(project.data.repo || project.data.demo) && (
+          <div class="flex gap-4 mt-3">
+            {project.data.repo && (
+              <a href={project.data.repo} class="text-sm no-underline">GitHub &rarr;</a>
+            )}
+            {project.data.demo && (
+              <a href={project.data.demo} class="text-sm no-underline">Demo &rarr;</a>
+            )}
+          </div>
+        )}
       </div>
     ))}
   </div>
