@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'LXGW WenKai';
+    src: url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css');
+    font-display: swap;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-body leading-relaxed;
+    @apply dark:bg-dark-bg dark:text-dark-text;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  a {
+    @apply text-cyan-dark dark:text-cyan-light transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-cinnabar dark:text-cinnabar-light;
+  }
+
+  ::selection {
+    @apply bg-cyan-dark/10;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-dark-card border border-smoke dark:border-dark-border rounded-sm p-5;
+  }
+
+  .tag {
+    @apply text-sm border border-smoke dark:border-dark-border px-2 py-0.5 rounded-sm
+           text-ink-light dark:text-dark-text-secondary;
+  }
+
+  .divider {
+    @apply border-t border-dashed border-smoke dark:border-dark-border my-8;
+  }
+}

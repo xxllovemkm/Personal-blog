@@ -1,0 +1,35 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { postSlug } from '../../utils';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Page title="文章 - 许兴龙">
+  <h1 class="text-xl font-heading mb-6">文章</h1>
+  <div class="space-y-3">
+    {posts.map((post) => (
+      <a href={`/posts/${postSlug(post.id)}`} class="card block no-underline group">
+        <h2 class="font-heading text-ink dark:text-dark-text group-hover:text-cyan-dark dark:group-hover:text-cyan-light transition-colors">
+          {post.data.title}
+        </h2>
+        <div class="flex items-center gap-2 mt-2 text-sm text-ink-light dark:text-dark-text-secondary">
+          <time datetime={post.data.date.toISOString()}>
+            {post.data.date.toLocaleDateString('zh-CN')}
+          </time>
+          {post.data.category && <span class="tag">{post.data.category}</span>}
+          {post.data.tags.slice(0, 3).map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+        {post.data.summary && (
+          <p class="mt-2 text-sm text-ink-light dark:text-dark-text-secondary line-clamp-2">
+            {post.data.summary}
+          </p>
+        )}
+      </a>
+    ))}
+  </div>
+</Page>

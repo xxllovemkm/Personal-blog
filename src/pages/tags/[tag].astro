@@ -1,0 +1,32 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { postSlug } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const tags = new Set<string>();
+  posts.forEach((post) => post.data.tags.forEach((tag) => tags.add(tag)));
+  return [...tags].map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.tags.includes(tag!)))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Page title={`${tag} - 标签`}>
+  <h1 class="text-xl font-heading mb-6">标签：{tag}</h1>
+  <div class="space-y-3">
+    {posts.map((post) => (
+      <a href={`/posts/${postSlug(post.id)}`} class="card block no-underline group">
+        <h2 class="font-heading text-ink dark:text-dark-text group-hover:text-cyan-dark dark:group-hover:text-cyan-light transition-colors">
+          {post.data.title}
+        </h2>
+        <time class="text-sm text-ink-light dark:text-dark-text-secondary" datetime={post.data.date.toISOString()}>
+          {post.data.date.toLocaleDateString('zh-CN')}
+        </time>
+      </a>
+    ))}
+  </div>
+</Page>

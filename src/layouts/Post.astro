@@ -1,0 +1,86 @@
+---
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  frontmatter: {
+    title: string;
+    date: string;
+    category?: string;
+    tags?: string[];
+    summary?: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const date = new Date(frontmatter.date);
+---
+
+<Base title={frontmatter.title} description={frontmatter.summary}>
+  <Header />
+  <main class="flex-1 max-w-prose mx-auto px-4 py-8 w-full">
+    <article>
+      <header class="mb-8">
+        <h1 class="text-2xl font-heading mb-3">{frontmatter.title}</h1>
+        <div class="flex items-center gap-3 text-sm text-ink-light dark:text-dark-text-secondary">
+          <time datetime={date.toISOString()}>
+            {date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+          {frontmatter.category && (
+            <span class="tag">{frontmatter.category}</span>
+          )}
+        </div>
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-3">
+            {frontmatter.tags.map((tag) => (
+              <a href={`/tags/${tag}`} class="tag no-underline">{tag}</a>
+            ))}
+          </div>
+        )}
+      </header>
+      <div class="divider"></div>
+      <div class="prose-content">
+        <slot />
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .prose-content :global(h2) {
+    @apply text-xl font-heading mt-8 mb-4;
+  }
+  .prose-content :global(h3) {
+    @apply text-lg font-heading mt-6 mb-3;
+  }
+  .prose-content :global(p) {
+    @apply mb-5 leading-relaxed;
+  }
+  .prose-content :global(ul), .prose-content :global(ol) {
+    @apply mb-5 pl-6;
+  }
+  .prose-content :global(li) {
+    @apply mb-1;
+  }
+  .prose-content :global(blockquote) {
+    @apply border-l-2 border-cyan-dark/40 dark:border-cyan-light/40 pl-4 my-5 text-ink-light dark:text-dark-text-secondary;
+  }
+  .prose-content :global(code) {
+    @apply font-mono text-sm bg-smoke/50 dark:bg-dark-border px-1.5 py-0.5 rounded-sm;
+  }
+  .prose-content :global(pre) {
+    @apply p-4 rounded-sm overflow-x-auto my-5 border border-smoke dark:border-dark-border;
+  }
+  .prose-content :global(pre code) {
+    @apply bg-transparent p-0;
+  }
+  .prose-content :global(img) {
+    @apply border border-smoke dark:border-dark-border rounded-sm;
+  }
+  .prose-content :global(a) {
+    @apply underline underline-offset-2 decoration-cyan-dark/30 dark:decoration-cyan-light/30;
+  }
+</style>

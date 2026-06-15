@@ -1,0 +1,40 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { postSlug } from '../../utils';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const grouped = new Map<number, typeof posts>();
+posts.forEach((post) => {
+  const year = post.data.date.getFullYear();
+  if (!grouped.has(year)) grouped.set(year, []);
+  grouped.get(year)!.push(post);
+});
+
+const years = [...grouped.keys()].sort((a, b) => b - a);
+---
+
+<Page title="归档 - 许兴龙">
+  <h1 class="text-xl font-heading mb-6">归档</h1>
+  <div class="space-y-8">
+    {years.map((year) => (
+      <section>
+        <h2 class="text-lg font-heading mb-3 text-cyan-dark dark:text-cyan-light">{year}</h2>
+        <div class="border-l border-smoke dark:border-dark-border pl-4 space-y-3">
+          {grouped.get(year)!.map((post) => (
+            <div class="flex items-baseline gap-3">
+              <time class="text-sm text-ink-light dark:text-dark-text-secondary shrink-0" datetime={post.data.date.toISOString()}>
+                {post.data.date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+              </time>
+              <a href={`/posts/${postSlug(post.id)}`} class="no-underline hover:text-cyan-dark dark:hover:text-cyan-light">
+                {post.data.title}
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</Page>

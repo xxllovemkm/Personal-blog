@@ -1,0 +1,27 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tagMap = new Map<string, number>();
+posts.forEach((post) => {
+  post.data.tags.forEach((tag) => {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  });
+});
+
+const tags = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<Page title="标签 - 许兴龙">
+  <h1 class="text-xl font-heading mb-6">标签</h1>
+  <div class="flex flex-wrap gap-3">
+    {tags.map(([tag, count]) => (
+      <a href={`/tags/${tag}`} class="tag no-underline">
+        {tag} <span class="text-ink-light/60 dark:text-dark-text-secondary/60 ml-1">{count}</span>
+      </a>
+    ))}
+  </div>
+</Page>
