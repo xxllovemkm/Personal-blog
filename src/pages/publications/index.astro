@@ -1,0 +1,35 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getPublications, openReviewProfile } from '../../data/publications';
+
+const publications = await getPublications();
+---
+
+<Page title="论文 - 许兴龙">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-heading">论文</h1>
+    <a href={openReviewProfile} class="text-sm no-underline text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light">
+      OpenReview
+    </a>
+  </div>
+
+  <div class="space-y-4">
+    {publications.map((paper) => (
+      <article class="card">
+        <a
+          href={paper.url}
+          class="font-heading text-ink dark:text-dark-text no-underline hover:text-cyan-dark dark:hover:text-cyan-light"
+        >
+          {paper.title}
+        </a>
+        {(paper.venue || paper.status || paper.rank) && (
+          <div class="mt-2 flex flex-wrap gap-2 text-xs text-ink-light dark:text-dark-text-secondary">
+            {paper.venue && <span>{paper.venue}</span>}
+            {paper.status && <span>{paper.status}</span>}
+            {paper.rank && <span>{paper.rank}</span>}
+          </div>
+        )}
+      </article>
+    ))}
+  </div>
+</Page>

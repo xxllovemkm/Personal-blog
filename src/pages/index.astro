@@ -6,6 +6,12 @@ import avatar from '../assets/images/avatar.webp';
 import { getPublications, openReviewProfile } from '../data/publications';
 import { postPath, sitePath } from '../utils';
 
+const featuredPublicationTitles = new Set([
+  'GGBench: A Geometric Generative Reasoning Benchmark for Unified Multimodal Models',
+  'Programming with Data: Test-Driven Data Engineering for Self-Improving LLMs from Raw Corpora',
+  'PaperFit: Vision-in-the-Loop Typesetting Optimization for Scientific Documents',
+]);
+
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 5);
@@ -13,7 +19,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
 const projects = await getCollection('projects');
 const publications = await getPublications();
 const featuredProjects = projects.slice(0, 5);
-const featuredPublications = publications.slice(0, 5);
+const featuredPublications = publications.filter((paper) => featuredPublicationTitles.has(paper.title));
 const projectUrl = (project: typeof projects[number]) => project.data.demo || project.data.repo;
 ---
 
@@ -69,8 +75,8 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
       <div class="card mt-4">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-base font-heading">发表论文</h2>
-          <a href={openReviewProfile} class="text-xs no-underline text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light">
-            OpenReview
+          <a href={sitePath('/publications')} class="text-xs no-underline text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light">
+            全部 &rarr;
           </a>
         </div>
         <div class="space-y-3">
