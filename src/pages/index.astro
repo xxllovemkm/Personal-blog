@@ -12,6 +12,8 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
 
 const projects = await getCollection('projects');
 const publications = await getPublications();
+const featuredProjects = projects.slice(0, 5);
+const featuredPublications = publications.slice(0, 5);
 const projectUrl = (project: typeof projects[number]) => project.data.demo || project.data.repo;
 ---
 
@@ -72,7 +74,7 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
           </a>
         </div>
         <div class="space-y-3">
-          {publications.map((paper) => (
+          {featuredPublications.map((paper) => (
             <article>
               <a
                 href={paper.url}
@@ -80,6 +82,13 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
               >
                 {paper.title}
               </a>
+              {(paper.venue || paper.status || paper.rank) && (
+                <div class="mt-1 flex flex-wrap gap-2 text-xs text-ink-light dark:text-dark-text-secondary">
+                  {paper.venue && <span>{paper.venue}</span>}
+                  {paper.status && <span>{paper.status}</span>}
+                  {paper.rank && <span>{paper.rank}</span>}
+                </div>
+              )}
             </article>
           ))}
         </div>
@@ -134,7 +143,7 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
             </a>
           </div>
           <div class="grid gap-3">
-            {projects.map((project) => (
+            {featuredProjects.map((project) => (
               <div class="card">
                 <h3 class="font-heading">
                   {projectUrl(project) ? (

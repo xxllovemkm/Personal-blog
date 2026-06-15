@@ -63,6 +63,13 @@ const publications = await getPublications();
               >
                 {paper.title}
               </a>
+              {(paper.venue || paper.status || paper.rank) && (
+                <div class="mt-1 flex flex-wrap gap-2 text-xs text-ink-light dark:text-dark-text-secondary">
+                  {paper.venue && <span>{paper.venue}</span>}
+                  {paper.status && <span>{paper.status}</span>}
+                  {paper.rank && <span>{paper.rank}</span>}
+                </div>
+              )}
             </article>
           ))}
         </div>
