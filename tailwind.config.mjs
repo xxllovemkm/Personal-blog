@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: '#FDFBF7',
+        paper: '#F4F0E8',
+        'paper-card': '#FBF8F1',
         ink: '#2C2C2C',
         'ink-light': '#6B6B6B',
         cyan: {
@@ -16,7 +17,7 @@ export default {
           DEFAULT: '#A0453E',
           light: '#C86B64',
         },
-        smoke: '#E8E2D9',
+        smoke: '#DDD3C4',
         'dark-bg': '#1A1A1E',
         'dark-card': '#242428',
         'dark-border': '#2E2E32',

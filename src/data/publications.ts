@@ -15,8 +15,9 @@ const fallbackPublications: Publication[] = [
     title: 'Bridging Modal Isolation in Interleaved Thinking: Supervising Modality Transitions via Stepwise Reinforcement',
     url: 'https://arxiv.org/abs/2606.12886',
     source: 'arxiv',
-    venue: 'arXiv',
-    status: 'Preprint',
+    venue: 'EMNLP 2026',
+    status: '在投',
+    rank: 'CCF-B',
   },
   {
     title: 'PaperFlow: Profiling, Recommending, and Adapting Across Daily Paper Streams',

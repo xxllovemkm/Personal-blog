@@ -31,7 +31,7 @@
 
 @layer components {
   .card {
-    @apply bg-white dark:bg-dark-card border border-smoke dark:border-dark-border rounded-sm p-5;
+    @apply bg-paper-card dark:bg-dark-card border border-smoke dark:border-dark-border rounded-sm p-5;
   }
 
   .tag {
