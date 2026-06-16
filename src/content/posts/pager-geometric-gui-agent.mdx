@@ -1,9 +1,9 @@
 ---
-title: "PAGER：几何 GUI 控制中的语义到执行鸿沟"
+title: "PAGER：GUI Agent 为什么会「知道怎么做但点不准」"
 date: "2026-06-16"
-category: "论文解读"
+category: "研究笔记"
 tags: ["GUI Agent", "几何构造", "强化学习"]
-summary: "PAGER 指出几何构造让 GUI agent 从区域容错进入点级精度任务，并通过拓扑感知规划与像素级执行缩小语义到执行鸿沟。"
+summary: "PAGER 把 GUI agent 从区域容错任务推进到点级精度任务：在几何画板上，动作类型对了远远不够，几个像素的误差就会沿构造依赖级联放大。"
 venue: "NeurIPS 2026"
 status: "在投"
 rank: "CCF-A"
@@ -11,50 +11,69 @@ paperUrl: "https://arxiv.org/abs/2605.15963"
 draft: false
 ---
 
-## 一句话概括
+import { Image } from 'astro:assets';
+import motivation from '../../assets/images/posts/pager/motivation.png';
+import dataPipeline from '../../assets/images/posts/pager/data_pipeline.png';
+import modelArch from '../../assets/images/posts/pager/model_arch.png';
+import heatmap from '../../assets/images/posts/pager/results_heatmap.png';
+import human from '../../assets/images/posts/pager/model_vs_human.png';
 
-PAGER 研究的是 GUI agent 在几何构造中的点级精确控制：模型知道该做什么还不够，必须能在连续画布上准确点到正确位置。
+## 从 GGBench 到 PAGER：问题往前推进了一步
 
-## 论文要解决的问题
+GGBench 之后，我们很自然地遇到下一个问题：模型能不能不只是写 GeoGebra 代码，而是在真实 GUI 里一步步把几何图形画出来？
 
-现有 GUI agent 很多任务是区域容错的。点击按钮、选择菜单、填写输入框时，只要动作落在同一个组件区域内，通常都算成功。这样的设定适合网页和移动应用，但不适合几何构造。
+这件事比普通 GUI agent 难很多。网页自动化里点按钮是 region-tolerant 的，只要点在按钮范围内就算成功；几何构造是 point-precise 的，点 A 偏几像素，后面的线、圆、交点、角度都会跟着偏。模型可能完全理解“下一步应该画对角线”，但执行时点错端点，最终图形就失效。
 
-几何画布里的点、线、圆和多边形依赖精确坐标。一个点偏了几个像素，后续连线、交点、角度和拓扑关系都会连锁错误。论文把这类任务定义为 precision-sensitive GUI tasks。
+这就是我们在论文里说的 Semantic-Execution Gap：语义上知道做什么，执行上做不出来。
 
-这带来一个重要观察：模型可能已经理解语义步骤，动作类型准确率也很高，但任务成功率仍然很低。原因在于语义规划和像素执行之间存在鸿沟。
+<Image src={motivation} alt="PAGER 中 region-tolerant GUI 和 point-precise 几何 GUI 的差异" />
 
-## 核心思路
+## PAGE Bench：不能只看最后图像像不像
 
-PAGER 从两个层面处理这个问题：
+为了把这个问题量化，我们构建了 PAGE Bench。数据规模是 4,906 个几何问题、53,277 个高层 construction tasks、224,497 条低层 GUI actions。
 
-- PAGE Bench：构建点级几何 GUI 控制基准，包含 4,906 个问题和超过 224K 条过程监督的像素级 GUI 动作。
-- PAGER agent：用拓扑感知规划管理构造依赖，再用像素级执行完成具体操作。
+<Image src={dataPipeline} alt="PAGE Bench 从几何题筛选、任务序列生成、GUI 执行到质量过滤的数据 pipeline" />
 
-论文强调几何原语具有 ontological dependencies。也就是说，后续对象不是独立动作，而是建立在前面对象之上。一个早期点的误差会改变整个构造图的拓扑。
+这个数据集不是静态的“题目 + 答案图”。每个轨迹里都保存了问题、当前截图、历史动作、下一步 action、执行反馈、坐标和空间标注。原因很简单：如果只看最终图，很多失败无法归因。我们需要知道模型到底是选错工具、点错位置、参数漂移，还是前面一步错误导致后面全部崩掉。
 
-## 方法拆解
+数据构建中最麻烦的是把抽象几何步骤变成可复现的浏览器动作。GeoGebra 里的每个 construction step 都要拆成工具选择、canvas 操作、输入参数、边界检查和重试。这个过程迫使我们把“几何推理”真正落到 pixel-level GUI execution 上。
 
-PAGER 先通过 pixel-grounded supervised tuning 建立可执行动作语法，让模型学会把语义动作落到 GUI 操作上。随后用 precision-aligned reinforcement learning 缓解 rollout 中的 exposure bias。
+## PAGER 的设计：规划管依赖，执行管像素
 
-这里的强化学习反馈不是泛泛的任务奖励，而是状态条件下的几何反馈。它让模型在执行过程中意识到精度偏差如何影响后续结构。
+PAGER 的结构其实很朴素：不要让一个模型在同一层里同时解决所有问题，而是把构造拆成 dependency-structured planning 和 pixel-level execution。
 
-论文报告了一个很有冲击力的现象：通用多模态模型可以达到超过 88% 的动作类型准确率，但任务成功率低于 6%。PAGER 将最强通用 baseline 的任务成功率提升 4.1 倍，并把 GUI-specialized agents 的 step success rate 从低于 9% 提升到超过 62%。
+<Image src={modelArch} alt="PAGER 的 topology-aware planning 和 pixel-level execution 框架" />
 
-## 为什么重要
+规划模块负责把几何题拆成有拓扑依赖的任务序列。几何对象不是独立生成的：线依赖点，交点依赖两条线，圆依赖圆心和半径，后续对象又依赖前面所有状态。这个 dependency graph 是防止“画着画着世界变了”的关键。
 
-这篇论文说明 GUI agent 的难点不能只用“看懂页面”和“选对动作类型”概括。很多真实环境要求精确执行，尤其是设计工具、CAD、标注平台、科学绘图和几何软件。
+执行模块负责把每个子任务转成 GUI action。我们先做 pixel-grounded SFT，让模型学到可执行动作语法；再做 precision-aligned RL，用 action-type correctness、parameter accuracy 和 rendered geometric validity 对齐训练目标。
 
-如果 agent 不能处理点级精度和依赖传播，它就很难从简单网页自动化走向专业生产工具。PAGER 把 GUI 控制问题推进到更接近真实工程任务的层面。
+这里强化学习真正优化的是点级执行，而不是泛泛奖励“任务成功”。如果 reward 只看动作类型，模型会学会选择正确工具，但坐标仍然漂；如果 reward 只看局部坐标，又可能破坏操作顺序。实验里两个 reward 是互补的。
 
-## 我的解读
+## 最刺眼的结果：动作类型很高，任务成功很低
 
-PAGER 和 GGBench 构成了很自然的上下游关系。GGBench 测试模型能否理解并生成几何构造，PAGER 则进一步要求模型在 GUI 环境中把构造执行出来。前者强调生成式推理，后者强调语义到执行的落地。
+这篇论文里最能说明问题的数字是：Claude-Sonnet-4.6 的 Action Accuracy 到 95.85，GPT-5.4 和 Gemini-3.1-Pro 也分别到 88.04 和 89.18，但 Task Success 只有 1.11、0.56 和 5.82。
 
-我认为“Semantic-Execution Gap”是 GUI agent 方向非常重要的概念。很多模型 demo 看起来会操作界面，但一旦任务需要高精度、长依赖和可验证结果，问题就会暴露。PAGER 的意义在于把这种差距量化，并提供了一个可训练、可评测的闭环方案。
+换句话说，它们大多知道应该选什么动作，却不能稳定把动作落到正确几何参数上。
 
-## 可以继续追的问题
+PAGER 的 Task Success 达到 23.78，大约是最强 general baseline Gemini-3.1-Pro 的 4.1 倍；Step Success 也从 GUI-specialized agents 的低于 9% 提到 62.20。这个提升不是因为模型突然更懂几何，而是因为训练目标终于对准了“点级执行 + 依赖传播”这个瓶颈。
 
-- 点级几何控制能否迁移到 CAD、绘图软件和科学可视化工具？
-- 拓扑感知规划是否可以和显式几何求解器结合？
-- GUI agent 的 reward 应该如何同时考虑语义正确、坐标准确和后续可恢复性？
-- PAGER 的过程监督能否用于训练更通用的 precision-sensitive agent？
+<Image src={heatmap} alt="PAGER 与各类模型在十类几何能力上的细粒度热力图" />
+
+## 自动评测和人类判断要对齐
+
+几何 GUI 任务还有一个坑：如果指标只看截图像素相似，可能会奖励错误图形；如果只看动作字符串，又会忽略等价构造路径。所以 PAGE Bench 的指标同时看过程、参数和最终几何有效性。
+
+我们用人工评分检查了自动评测，相关性达到 0.9397。这个结果对 benchmark 很关键，因为它说明指标不是在优化一个偏离人类判断的 proxy。
+
+<Image src={human} alt="PAGE Bench 自动评分和人类评分的相关性" />
+
+## 这篇工作在研究线索里的位置
+
+PAGER 和 GGBench 是一条线上的两个阶段。
+
+GGBench 问的是：模型能不能把语言几何题转成可验证的构造？PAGER 进一步问：如果不给你代码执行器，而是给你真实 GUI，你能不能把构造过程精确操作出来？
+
+这也连接到更大的 GUI agent 问题。现在很多 agent benchmark 默认 GUI 是离散组件集合，但实际生产工具不总是这样：CAD、标注平台、图形编辑器、科学可视化都要求连续空间控制。PAGER 想证明的是，GUI agent 如果要进入这些专业工具，必须从 region grounding 走向 precision-sensitive control。
+
+后续如果继续推进，我会更关心两个方向：一是把拓扑规划和显式几何求解器结合，减少模型在坐标上的自由漂移；二是把这个执行框架迁移到更真实的专业软件，而不只是 GeoGebra。

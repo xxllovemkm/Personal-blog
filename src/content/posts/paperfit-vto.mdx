@@ -1,9 +1,9 @@
 ---
-title: "PaperFit：从可编译 LaTeX 到视觉合格 PDF 的闭环优化"
+title: "PaperFit：把论文排版从「能编译」推进到「能投稿」"
 date: "2026-06-16"
-category: "论文解读"
+category: "研究笔记"
 tags: ["LaTeX", "文档智能", "视觉智能体"]
-summary: "PaperFit 将科学文档排版优化定义为 VTO，用视觉闭环诊断并修复浮动体、溢出、表格缩放和页面平衡等问题。"
+summary: "我们把 LaTeX 论文最后一公里的排版修复定义成 Visual Typesetting Optimization：不是让模型写论文，而是让它像作者一样反复编译、看 PDF、定位视觉缺陷、做受约束修改。"
 venue: "NeurIPS 2026"
 status: "在投"
 rank: "CCF-A"
@@ -11,47 +11,75 @@ paperUrl: "https://arxiv.org/abs/2605.10341"
 draft: false
 ---
 
-## 一句话概括
+import { Image } from 'astro:assets';
+import teaser from '../../assets/images/posts/paperfit/paperfit_v3.png';
+import pipeline from '../../assets/images/posts/paperfit/pipeline.png';
+import perturbation from '../../assets/images/posts/paperfit/perturbation_strategy.png';
+import modelComparison from '../../assets/images/posts/paperfit/model_comparison.png';
+import correlation from '../../assets/images/posts/paperfit/correlation.png';
 
-PaperFit 解决的是一个很具体但长期被忽视的问题：LaTeX 能编译成功，不代表 PDF 已经达到投稿级视觉质量。
+## 这个项目最初不是想做「LaTeX 生成」
 
-## 论文要解决的问题
+PaperFit 的出发点其实很日常：一篇论文已经能编译了，但 PDF 仍然不像一篇可以提交的论文。
 
-科研写作中，作者经常陷入 compile-inspect-edit 循环。源码没有报错，但 PDF 里可能有浮动体位置不合理、公式溢出、表格缩放不一致、孤行寡行、页面留白失衡等问题。
+浮动体离正文引用太远、表格伸出栏宽、公式轻微溢出、最后一页空得像缺内容、模板迁移后图表宽度全乱。这些问题在 LaTeX log 里要么没有信号，要么只是一个很弱的 warning；但作者一眼就能看出来不对。
 
-传统工具主要看源码和日志，看不到最终视觉效果。纯文本 LLM 虽然能改 LaTeX，但它无法在修改前准确预测二维排版结果，也无法在修改后验证页面是否真的变好。
+所以我们没有把目标定义成“从自然语言生成 LaTeX”，而是定义成更靠近投稿前真实工作流的任务：给定一个可编译项目，让系统像作者一样经历 **compile -> inspect -> edit -> recompile**，直到 PDF 在视觉上可接受，并且满足页数和模板约束。
 
-PaperFit 的问题定义很清楚：如何把一个可编译的 LaTeX 论文，迭代优化成视觉上更符合出版要求、同时满足页数预算的 PDF？
+<Image src={teaser} alt="PaperFit 对比 rule-based、text-only LLM 和视觉闭环排版优化" />
 
-## 核心思路
+## VTO 这个定义是被问题逼出来的
 
-论文将这个任务形式化为 Visual Typesetting Optimization，简称 VTO。VTO 的目标不是重新写论文，而是在保持学术语义和模板风格的前提下，通过视觉验证和源码级修改消除排版缺陷。
+写论文时大家真正关心的不是“源码语法是否正确”，而是最终 PDF 是否达标。我们后来把这个任务叫 Visual Typesetting Optimization，简称 VTO。
 
-PaperFit 是一个 vision-in-the-loop agent。它每一轮都会渲染页面、诊断视觉缺陷、选择受约束的修复动作，然后重新编译验证。这个闭环是论文的核心，因为排版优化的结果只有在 PDF 上才能被真正确认。
+这个定义有两个关键约束。
 
-## 方法拆解
+第一，优化对象是渲染后的页面，不是源码本身。很多缺陷只有 page image 才能看见，比如表格虽然源码合法，但视觉上已经越过 column；或者图虽然没有报错，但把阅读顺序打断了。
 
-论文提出五类排版缺陷 taxonomy，用来指导诊断和修复。虽然不同模板、不同会议对细节要求不同，但很多问题具有共性：空间利用、浮动体位置、一致性、溢出对齐、跨模板迁移。
+第二，修复必须是受约束的。排版修复很容易出现伪解：随手 `\vspace{-10pt}`、粗暴 `\resizebox`、强行 `\newpage`，短期看起来有效，但会破坏模板规范、字体比例或后续页面。PaperFit 里我们把这些操作显式列为低优先级或禁用操作，把“内容保真”和“模板一致”放在视觉优化之前。
 
-PaperFit 的修复策略强调受约束修改。它不是随意压缩字体、删除内容或暴力缩放表格，而是在模板规则和语义约束下做局部调整。为了评测，论文构建 PaperFit-Bench，覆盖 200 篇论文、10 种 venue template 和 13 类缺陷。
+## Benchmark 最难的是让缺陷真实
 
-这使 VTO 从经验活变成可评测任务：不同系统可以在相同论文、相同缺陷和相同页面预算下比较效果。
+PaperFit-Bench 最后包含 200 篇论文、10 种 venue template、13 类扰动，覆盖空间利用、浮动体、表格宽度、溢出、跨模板迁移五大类。
 
-## 为什么重要
+<Image src={perturbation} alt="PaperFit-Bench 中五类扰动和 13 种具体排版缺陷的分布" />
 
-科学文档自动化过去更多关注写作、润色、引用、检索，却较少关注最终 PDF 的视觉可用性。但对于投稿和审稿来说，PDF 质量非常现实。一个页面是否溢出、表格是否可读、图是否被挤到错误位置，都会影响作者体验和读者体验。
+这里比较容易做错的一点是把 benchmark 做成玩具例子：每个 case 只塞一个很干净的 overfull table，然后让模型改回来。真实投稿不是这样。真实问题往往是多缺陷叠加：模板迁移导致页数漂移，浮动体被挤走，表格同时越界，最后一页又出现大块留白。
 
-PaperFit 的价值在于补上了“可编译”和“可发表”之间的缺口。它把文档智能从文本层推进到渲染层，也说明很多任务需要视觉闭环，而不是只靠源码分析。
+所以我们更强调 mixed disturbance。每个 case 都保留扰动 manifest、编译日志、渲染页面和目标页数，方便之后判断模型到底修了什么，也防止模型只靠“让它能编译”糊弄过去。
 
-## 我的解读
+## PaperFit 的关键不是看图，而是有组织地闭环
 
-我认为 PaperFit 把一个看似琐碎的问题提升成了很好的 agent benchmark。它有清晰目标、真实工具链、可执行环境、可视化反馈和严格约束，非常适合检验模型是否能在真实工作流中迭代改进。
+一开始我们也验证过一个很自然的 baseline：把源码、log、页面截图都给视觉模型，让它多轮修改。结果它确实比纯文本强，但不稳定。模型会修掉一个问题，又引入另一个问题；或者只要 PDF 能 render，就提前停止。
 
-更重要的是，PaperFit 不是让模型自由编辑论文，而是要求它理解工程边界。排版优化的难点恰恰在于不能破坏模板、不能改变学术含义、不能用粗暴缩放掩盖问题。这种受约束自动化，比开放式生成更接近实际科研生产。
+PaperFit 真正加入的是三件事：
 
-## 可以继续追的问题
+1. 多源证据整合：source、log、PDF、page image 各自负责不同信号。
+2. 受约束修复策略：哪些操作优先，哪些操作禁止，哪些对象不能动。
+3. checklist-gated validation：每次修改后重新编译、渲染、检查全篇，而不是只看局部。
 
-- VTO 的视觉缺陷能否进一步自动评分，减少人工验收成本？
-- 不同 venue 的审美和规则差异如何被系统化建模？
-- PaperFit 是否能和 Overleaf、arXiv 编译、会议模板检查集成？
-- 文档视觉优化能否扩展到 slide、poster 和网页论文主页？
+<Image src={pipeline} alt="PaperFit 的多源证据、受约束修复和 checklist-gated validation pipeline" />
+
+这个设计听起来像工程细节，但正是 reviewer 会追问的地方：你是不是只是把截图丢给 VLM？实验表明不是。VisualMR 也能看页面、也能多轮修，但缺少结构化 defect records、repair constraints 和 gatekeeper 后，页数约束和全局稳定性都会明显变差。
+
+## 实验里最能说明问题的两个发现
+
+第一个发现是：视觉反馈必要，但不充分。PaperFit 在编译/渲染成功、视觉质量和 page-budget compliance 上都显著优于 baselines；最有信息量的对比不是和完全看不见图的模型比，而是和同样能看图的 naive visual agent 比。
+
+<Image src={modelComparison} alt="PaperFit 在多维 VLM 评分上的模型对比" />
+
+第二个发现是：自动视觉评价在这个任务上是可用的。我们用 human/VLM correlation 做了检查，整体 Spearman 相关达到 0.8571。这很重要，因为如果评价本身不可信，VTO 就很难扩展成 benchmark。
+
+<Image src={correlation} alt="PaperFit 中 VLM 评分和人工评分的相关性" />
+
+当然，PaperFit 也不是万能的。hard case 里如果同时有 5-8 个扰动，page-budget hit rate 会下降到约 70%。这说明最后一公里排版优化仍然很难，尤其当浮动体密度、模板差异和页数预算同时施压时。
+
+## 回过头看这个工作的价值
+
+我觉得 PaperFit 最重要的不是“做了一个排版工具”，而是把文档智能里一个长期被忽略的阶段单独定义出来了。
+
+过去很多 document automation 工作停在 structural formatting：把 Word、Markdown、PDF 或自然语言变成可编译 LaTeX。但科研作者真正痛苦的地方往往发生在之后：论文已经能编译了，距离投稿却还有大量视觉修复。
+
+PaperFit 试图补上这段缺口。它和 ProDa、PAGER 有一个共同点：都不是让模型自由生成，而是把模型放进一个有约束、有验证、有反馈的工程系统里。ProDa 把数据当成可测试源代码，PAGER 把 GUI 操作当成可验证几何执行，PaperFit 则把 PDF 页面当成最终验收对象。
+
+如果后续继续做，我更想把它接到真实作者工作流里：Overleaf、arXiv 编译、会议模板检查、论文主页生成。因为这个任务只有进入真实 deadline 场景，才会暴露出最有价值的问题。
