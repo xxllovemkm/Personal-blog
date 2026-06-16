@@ -1,5 +1,6 @@
 ---
 import { sitePath } from '../utils';
+import logo from '../assets/logo.svg';
 
 const navItems = [
   { path: '/', label: '首页' },
@@ -19,8 +20,17 @@ const currentPath = Astro.url.pathname.startsWith(base)
 
 <header class="border-b border-smoke dark:border-dark-border">
   <nav class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-    <a href={sitePath('/')} class="font-heading text-lg text-ink dark:text-dark-text no-underline shrink-0">
-      许兴龙
+    <a href={sitePath('/')} class="flex items-center gap-2 text-ink dark:text-dark-text no-underline shrink-0 group">
+      <img
+        src={logo.src}
+        width="32"
+        height="32"
+        alt="许兴龙"
+        class="h-8 w-8"
+      />
+      <span class="font-heading text-lg group-hover:text-cinnabar dark:group-hover:text-cinnabar-light transition-colors">
+        许兴龙
+      </span>
     </a>
     <div class="hidden md:flex items-center gap-6">
       {navItems.map((item) => (
