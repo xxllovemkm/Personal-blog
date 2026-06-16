@@ -12,6 +12,10 @@ export interface Props {
     category?: string;
     tags?: string[];
     summary?: string;
+    venue?: string;
+    status?: string;
+    rank?: string;
+    paperUrl?: string;
   };
 }
 
@@ -33,6 +37,16 @@ const date = new Date(frontmatter.date);
             <span class="tag">{frontmatter.category}</span>
           )}
         </div>
+        {(frontmatter.venue || frontmatter.status || frontmatter.rank || frontmatter.paperUrl) && (
+          <div class="flex flex-wrap gap-2 mt-3 text-sm text-ink-light dark:text-dark-text-secondary">
+            {frontmatter.venue && <span>{frontmatter.venue}</span>}
+            {frontmatter.status && <span>{frontmatter.status}</span>}
+            {frontmatter.rank && <span>{frontmatter.rank}</span>}
+            {frontmatter.paperUrl && (
+              <a href={frontmatter.paperUrl} class="no-underline">论文链接</a>
+            )}
+          </div>
+        )}
         {frontmatter.tags && frontmatter.tags.length > 0 && (
           <div class="flex flex-wrap gap-2 mt-3">
             {frontmatter.tags.map((tag) => (

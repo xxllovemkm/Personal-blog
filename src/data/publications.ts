@@ -101,7 +101,7 @@ async function fetchOpenReviewPublications(): Promise<Publication[]> {
   const publications = new Map<string, Publication>();
 
   for (const endpoint of endpoints) {
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, { signal: AbortSignal.timeout(5000) });
     if (!response.ok) continue;
 
     const data = await response.json();

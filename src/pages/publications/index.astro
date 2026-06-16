@@ -23,10 +23,10 @@ const publications = await getPublications();
           {paper.title}
         </a>
         {(paper.venue || paper.status || paper.rank) && (
-          <div class="mt-2 flex flex-wrap gap-2 text-xs text-ink-light dark:text-dark-text-secondary">
-            {paper.venue && <span>{paper.venue}</span>}
-            {paper.status && <span>{paper.status}</span>}
-            {paper.rank && <span>{paper.rank}</span>}
+          <div class="mt-2 flex flex-wrap gap-2 text-xs">
+            {paper.venue && <span class="tag">{paper.venue}</span>}
+            {paper.rank && <span class="tag text-cyan-dark dark:text-cyan-light">{paper.rank}</span>}
+            {paper.status && <span class="text-ink-light dark:text-dark-text-secondary">{paper.status}</span>}
           </div>
         )}
       </article>

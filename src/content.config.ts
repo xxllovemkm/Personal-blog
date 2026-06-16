@@ -8,6 +8,10 @@ const posts = defineCollection({
     category: z.string().optional(),
     tags: z.array(z.string()).default([]),
     summary: z.string().optional(),
+    venue: z.string().optional(),
+    status: z.string().optional(),
+    rank: z.string().optional(),
+    paperUrl: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

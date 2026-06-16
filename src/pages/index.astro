@@ -12,9 +12,9 @@ const featuredPublicationTitles = new Set([
   'PaperFit: Vision-in-the-Loop Typesetting Optimization for Scientific Documents',
 ]);
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 5);
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = allPosts.slice(0, 5);
 
 const projects = await getCollection('projects');
 const publications = await getPublications();
@@ -24,9 +24,9 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
 ---
 
 <Page title="许兴龙 - 个人博客">
-  <section class="grid md:grid-cols-3 gap-8">
+  <section class="grid md:grid-cols-3 gap-8 items-start">
     <!-- 个人信息 -->
-    <aside class="md:col-span-1">
+    <aside class="md:col-span-1 md:sticky md:top-6">
       <div class="card text-center">
         <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border border-smoke dark:border-dark-border bg-smoke dark:bg-dark-border">
           <Image
@@ -58,7 +58,7 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
       <div class="card mt-4">
         <div class="grid grid-cols-3 gap-3 text-center text-sm">
           <div>
-            <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{posts.length}</div>
+            <div class="text-lg font-heading text-cyan-dark dark:text-cyan-light">{allPosts.length}</div>
             <div class="text-ink-light dark:text-dark-text-secondary">文章</div>
           </div>
           <div>
@@ -126,6 +126,13 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
                     <span class="tag">{tag}</span>
                   ))}
                 </div>
+                {(post.data.venue || post.data.status || post.data.rank) && (
+                  <div class="flex flex-wrap gap-2 mt-2 text-xs text-ink-light dark:text-dark-text-secondary">
+                    {post.data.venue && <span>{post.data.venue}</span>}
+                    {post.data.status && <span>{post.data.status}</span>}
+                    {post.data.rank && <span>{post.data.rank}</span>}
+                  </div>
+                )}
                 {post.data.summary && (
                   <p class="mt-2 text-sm text-ink-light dark:text-dark-text-secondary line-clamp-2">
                     {post.data.summary}
