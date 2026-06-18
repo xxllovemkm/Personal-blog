@@ -16,7 +16,8 @@ const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const posts = allPosts.slice(0, 5);
 
-const projects = await getCollection('projects');
+const projects = (await getCollection('projects'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const publications = await getPublications();
 const featuredProjects = projects.slice(0, 5);
 const featuredPublications = publications.filter((paper) => featuredPublicationTitles.has(paper.title));
