@@ -46,9 +46,15 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
           <a href="https://github.com/xxllovemkm" aria-label="GitHub" class="hover:text-cyan-dark dark:hover:text-cyan-light">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.37.5 0 5.78 0 12.292c0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.333-1.723-1.333-1.723-1.089-.731.083-.716.083-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.802 2.807 1.281 3.492.98.108-.762.418-1.281.762-1.576-2.665-.297-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.228-3.164-.122-.298-.532-1.497.117-3.12 0 0 1.001-.314 3.28 1.209A11.5 11.5 0 0112 6.844c1.02.005 2.047.135 3.004.397 2.277-1.523 3.275-1.209 3.275-1.209.651 1.623.241 2.822.118 3.12.765.825 1.226 1.877 1.226 3.164 0 4.53-2.805 5.527-5.475 5.818.43.365.814 1.084.814 2.184 0 1.576-.014 2.846-.014 3.232 0 .316.216.683.825.567C20.565 21.917 24 17.5 24 12.292 24 5.78 18.627.5 12 .5z"/></svg>
           </a>
-          <a href="mailto:xuxinglong00423@163.com" aria-label="邮箱" class="hover:text-cyan-dark dark:hover:text-cyan-light">
+          <button
+            type="button"
+            data-email-copy="xuxinglong00423@163.com"
+            aria-label="复制邮箱"
+            title="复制邮箱"
+            class="text-ink-light dark:text-dark-text-secondary hover:text-cyan-dark dark:hover:text-cyan-light transition-colors duration-200 cursor-pointer"
+          >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-          </a>
+          </button>
           <a href={openReviewProfile} aria-label="OpenReview" class="text-sm font-mono no-underline hover:text-cyan-dark dark:hover:text-cyan-light">
             OR
           </a>
@@ -178,4 +184,42 @@ const projectUrl = (project: typeof projects[number]) => project.data.demo || pr
       )}
     </div>
   </section>
+
+  <script>
+    const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-email-copy]');
+
+    copyButtons.forEach((button) => {
+      const email = button.dataset.emailCopy;
+
+      if (!email) return;
+
+      button.addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(email);
+          } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = email;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.append(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            textarea.remove();
+          }
+
+          button.setAttribute('aria-label', '邮箱已复制');
+          button.setAttribute('title', '邮箱已复制');
+          window.setTimeout(() => {
+            button.setAttribute('aria-label', '复制邮箱');
+            button.setAttribute('title', '复制邮箱');
+          }, 1600);
+        } catch {
+          button.setAttribute('aria-label', email);
+          button.setAttribute('title', email);
+        }
+      });
+    });
+  </script>
 </Page>
